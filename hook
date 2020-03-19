@@ -5,7 +5,7 @@
 $HookScriptFileName=""
 
 $HookScriptLocation=(Get-Item ([string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot))
-$HookScriptLocation=(Join-Path -Path $HookScriptLocation -ChildPath $HookScriptFileName)
+$HookScriptLocation=(Join-Path -Path $HookScriptLocation -ChildPath (Join-Path -Path "Git hooks" -ChildPath $HookScriptFileName))
 $ReturnCode=(Invoke-Expression -Command "$HookScriptLocation")
 
 exit $ReturnCode

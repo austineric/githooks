@@ -15,7 +15,7 @@ $ErrorActionPreference="Stop"
 #script variables
 $TemporaryBranch=""
 $Destination=""
-$DirectoriesToPush=""     #comma-separated names of the directories that should be pushed to the prod repo
+$ItemsToPush=""     #comma-separated names of the files and/or folders that should be pushed to the prod repo
 $OriginalBranch=""
 
 Try {
@@ -44,7 +44,7 @@ Try {
 
     #remove all files except .git, .gitignore, and the specified directory
     Write-Host "Removing any files that shouldn't be sent to prod repo..."
-    Get-ChildItem -Exclude .git\*, .gitignore, $DirectoriesToPush | Remove-Item -Recurse -Force
+    Get-ChildItem -Exclude .git\*, .gitignore, $ItemsToPush | Remove-Item -Recurse -Force
 
     #stage the changes for committing
     Write-Host "Staging changes for commit..."
