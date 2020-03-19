@@ -86,6 +86,8 @@ Try {
         Throw "Deleting temporary branch failed"
     }
 
+    Return 0
+
 }
 Catch {
 

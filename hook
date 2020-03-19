@@ -6,6 +6,13 @@ $HookScriptFileName=""
 
 $HookScriptLocation=(Get-Item ([string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot))
 $HookScriptLocation=(Join-Path -Path $HookScriptLocation -ChildPath (Join-Path -Path "Git hooks" -ChildPath $HookScriptFileName))
-$ReturnCode=(Invoke-Expression -Command "$HookScriptLocation")
+$ReturnCode=(Invoke-Expression -Command "& '$HookScriptLocation'")
 
-exit $ReturnCode
+if ($ReturnCode -eq 0)
+{
+	Exit $ReturnCode
+}
+else
+{
+	Exit 1
+}
