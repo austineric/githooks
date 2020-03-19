@@ -13,9 +13,9 @@
 $ErrorActionPreference="Stop"
 
 #script variables
-$TemporaryBranch="MarketingData_script"
-$Destination="//USBLMAPP06/Prod repos/MarketingData"
-$DirectoriesToPush="MarketingData script"     #comma-separated names of the directories that should be pushed to the prod repo
+$TemporaryBranch=""
+$Destination=""
+$DirectoriesToPush=""     #comma-separated names of the directories that should be pushed to the prod repo
 $OriginalBranch=""
 
 Try {
