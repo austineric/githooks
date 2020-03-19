@@ -1,0 +1,11 @@
+#!/bin/env pwsh
+
+#hooks run in the context of the repo root
+
+$HookScriptFileName=""
+
+$HookScriptLocation=(Get-Item ([string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot))
+$HookScriptLocation=(Join-Path -Path $HookScriptLocation -ChildPath $HookScriptFileName)
+$ReturnCode=(Invoke-Expression -Command "$HookScriptLocation")
+
+exit $ReturnCode
