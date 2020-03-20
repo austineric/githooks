@@ -15,13 +15,9 @@ $ErrorActionPreference="Stop"
 #script variables
 $Destination=''         #double-quoted if necessary
 $ItemsToKeep=''         #comma-separated names of the files and/or folders that should be pushed to the prod repo, double-quoted if necessary, ie '"Folder 1", "Folder 2"'
-$CurrentBranch=""       #instantiate empty
 $RemoveItemsCommand=""  #instantiate empty
 
 Try {
-
-    #get current branch
-    $CurrentBranch=(((git branch) | Where-Object { $_ -match "\*" })  -replace "\* ", "")
 
     Write-Host "---------------"
     Write-Host ""
@@ -36,7 +32,7 @@ Try {
 
     #push the branch (use no-verify to prevent this hook from being called again)
     Write-Host "Pushing to prod repo..."
-    git push $Destination $CurrentBranch --no-verify --force --quiet
+    git push $Destination master --no-verify --force --quiet
     if ($LASTEXITCODE -ne 0)
     {
         Throw "Pushing to prod repo failed"
