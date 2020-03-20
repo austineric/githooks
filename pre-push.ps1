@@ -47,8 +47,8 @@ Try {
     $RemoveItemsCommand="Get-ChildItem -Path $Destination -Exclude .git\*, .gitignore, $ItemsToKeep | Remove-Item -Recurse -Force"
     Invoke-Expression -Command $RemoveItemsCommand
 
-    #return success code of 0
-    Return 0
+    Write-Host "Success"
+    Return 0    #return success code of 0
 
 }
 Catch {
