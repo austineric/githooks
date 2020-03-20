@@ -13,8 +13,8 @@
 $ErrorActionPreference="Stop"
 
 #script variables
-$Destination=""
-$ItemsToKeep=''         #comma-separated names of the files and/or folders that should be pushed to the prod repo, double-quoted if needed, ie '"Folder 1", "Folder 2"'
+$Destination=''         #double-quoted if necessary
+$ItemsToKeep=''         #comma-separated names of the files and/or folders that should be pushed to the prod repo, double-quoted if necessary, ie '"Folder 1", "Folder 2"'
 $CurrentBranch=""       #instantiate empty
 $RemoveItemsCommand=""  #instantiate empty
 
@@ -42,13 +42,9 @@ Try {
         Throw "Pushing to prod repo failed"
     }
 
-    #change to the destination directory
-    Write-Host "Changing location to prod repo..."
-    Set-Location -Path $Destination
-
     #remove unnecessary items (use Invoke-Expression to properly handle multiple items with spaces in their names)
     Write-Host "Removing unnecessary items..."
-    $RemoveItemsCommand="Get-ChildItem -Exclude .git\*, .gitignore, $ItemsToKeep | Remove-Item -Recurse -Force"
+    $RemoveItemsCommand="Get-ChildItem -Path $Destination -Exclude .git\*, .gitignore, $ItemsToKeep | Remove-Item -Recurse -Force"
     Invoke-Expression -Command $RemoveItemsCommand
 
     #return success code of 0
