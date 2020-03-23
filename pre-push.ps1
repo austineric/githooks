@@ -3,19 +3,20 @@
 ####################################
 # Author:       Eric Austin
 # Description:  Pre-push git hook
-# Notes:        Pushes the repo to a specified location then removes unnecessary items
+# Notes:        Copies specified repo items to another location (ie a prod repo)
 #               Pre-push hooks receive the following arguments:
-#                   $Remote=$Args[0]
-#                   $URL=$Args[1]
+#                   $Remote=$Args[0]    #name of remote
+#                   $URL=$Args[1]       #location of remote
 ####################################
 
 #common variables
+$CurrentDirectory=[string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Lcation).Path : $PSScriptRoot
 $ErrorActionPreference="Stop"
 
 #script variables
 $Destination=''         #double-quoted if necessary
-$ItemsToKeep=''         #comma-separated names of the files and/or folders that should be pushed to the prod repo, double-quoted if necessary, ie '"Folder 1", "Folder 2"'
-$RemoveItemsCommand=""  #instantiate empty
+$ItemsToCopy=''         #double-quoted (if necessary) comma-separated names of the files and/or folders that should be transferred to the prod repo, ie '"Folder 1", "Folder 2"'
+$CopyItemsCommand=""    #instantiate empty
 
 Try {
 
@@ -23,25 +24,10 @@ Try {
     Write-Host ""
     Write-Host "Running pre-push hook..."
 
-    #check for outstanding changes
-    Write-Host "Checking for outstanding changes..."
-    if (-not [string]::IsNullOrWhiteSpace($(git status --porcelain)))
-    {
-        Throw "Git status returned outstanding changes"
-    }
-
-    #push the branch (use no-verify to prevent this hook from being called again)
-    Write-Host "Pushing to prod repo..."
-    git push $Destination master --no-verify --force --quiet
-    if ($LASTEXITCODE -ne 0)
-    {
-        Throw "Pushing to prod repo failed"
-    }
-
-    #remove unnecessary items (use Invoke-Expression to properly handle multiple items with spaces in their names)
-    Write-Host "Removing unnecessary items..."
-    $RemoveItemsCommand="Get-ChildItem -Path $Destination -Exclude .git\*, .gitignore, $ItemsToKeep | Remove-Item -Recurse -Force"
-    Invoke-Expression -Command $RemoveItemsCommand
+    #copy specified items (use Invoke-Expression to properly handle multiple items with spaces in their names)
+    Write-Host "Copying specified items..."
+    $CopyItemsCommand="Copy-Item -Path $CurrentDirectory -Destination $Destination -Include $ItemsToCopy -Recurse"
+    Invoke-Expression -Command $CopyItemsCommand
 
     Write-Host "Success"
     Return 0    #return success code of 0
