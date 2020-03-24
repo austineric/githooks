@@ -3,34 +3,22 @@
 ####################################
 # Author:       Eric Austin
 # Description:  Pre-push git hook
-# Notes:        Copies specified repo items to another location (ie a prod repo)
+# Notes:        Sets permissions as needed
 #               Pre-push hooks receive the following arguments:
 #                   $Remote=$Args[0]    #name of remote
 #                   $URL=$Args[1]       #location of remote
 ####################################
 
 #declare namespaces
-using namespace System.Collections.Generic
 using namespace System.Security.AccessControl
 
 #common variables
-$CurrentDirectory=[string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot
 $ErrorActionPreference="Stop"
 
 #script variables
-$Destination=''         #double-quoted if necessary
-$ItemsToCopy=''         #double-quoted (if necessary) comma-separated names of the files and/or folders that should be transferred to the prod repo, ie '"Folder 1", "Folder 2"'
-$ItemsToExclude=''      #double-quoted (if necessary) comma-separated names of the files and/or folders (within ItemsToCopy) that should be ignored (ie a "FilesAlreadyImported" folder that shouldn't be overwritten)
-$CopyItemsCommand=""    #instantiate empty
-[List[string]] $AccessRuleList=@() #instantiate empty
+$ProdRepoLocation=""        #not necessary to double-quote
 
-#targeted permissions (repeat for as many targets and users as necessary)
-$Target1=''     #double-quoted if necessary
-$User1=""       #DOMAIN/username       
-$AccessRule1=New-Object FileSystemAccessRule("$User1","FullControl","ContainerInherit,Objectinherit","none","Allow")
-$AccessControlList1=(Get-Acl -Path $Target1)
-$AccessControlList1.SetAccessRule($AccessRule1)
-$AccessRuleList.Add("Set-Acl -Path $Target1 -AclObject `$AccessControlList1")
+#targeted permissions must be set in the body of the script (the permissions can't be set until the repo is pushed and the directories exist)
 
 Try {
 
@@ -38,12 +26,23 @@ Try {
     Write-Host ""
     Write-Host "Running pre-push hook..."
 
-    
+    #push to prod repo
+    Write-Host "Pushing to prod repo..."
+    git push $ProdRepoLocation master --no-verify --force
+    if ($LASTEXITCODE -ne 0)
+    {
+        Throw "Pushing to prod repo failed"
+    }
 
-    #copy specified items (use Invoke-Expression to properly handle multiple items with spaces in their names)
-    Write-Host "Copying specified items..."
-    $CopyItemsCommand="Copy-Item -Path $CurrentDirectory -Destination $Destination -Include $ItemsToCopy -Exclude $ItemsToExclude -Recurse"
-    Invoke-Expression -Command $CopyItemsCommand
+    Write-Host "Setting permissions..."
+
+    #targeted permissions (repeat for as many targets and users as necessary)
+    $Target="$(Join-Path -Path $ProdRepoLocation -ChildPath "TargetedDirectoryHere")"     #do not double-quote (the Get-Acl command below doesn't handle the double-quoted variable)
+    $User="DOMAIN/UsernameHere"       #DOMAIN/username
+    $AccessRule=New-Object FileSystemAccessRule("$User","FullControl","ContainerInherit,Objectinherit","none","Allow")
+    $AccessControlList=(Get-Acl -Path $Target)
+    $AccessControlList.SetAccessRule($AccessRule)
+    Set-Acl -Path $Target -AclObject $AccessControlList
 
     Write-Host "Success"
     Return 0    #return success code of 0
