@@ -9,14 +9,28 @@
 #                   $URL=$Args[1]       #location of remote
 ####################################
 
+#declare namespaces
+using namespace System.Collections.Generic
+using namespace System.Security.AccessControl
+
 #common variables
-$CurrentDirectory=[string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Lcation).Path : $PSScriptRoot
+$CurrentDirectory=[string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot
 $ErrorActionPreference="Stop"
 
 #script variables
 $Destination=''         #double-quoted if necessary
 $ItemsToCopy=''         #double-quoted (if necessary) comma-separated names of the files and/or folders that should be transferred to the prod repo, ie '"Folder 1", "Folder 2"'
+$ItemsToExclude=''      #double-quoted (if necessary) comma-separated names of the files and/or folders (within ItemsToCopy) that should be ignored (ie a "FilesAlreadyImported" folder that shouldn't be overwritten)
 $CopyItemsCommand=""    #instantiate empty
+[List[string]] $AccessRuleList=@() #instantiate empty
+
+#targeted permissions (repeat for as many targets and users as necessary)
+$Target1=''     #double-quoted if necessary
+$User1=""       #DOMAIN/username       
+$AccessRule1=New-Object FileSystemAccessRule("$User1","FullControl","ContainerInherit,Objectinherit","none","Allow")
+$AccessControlList1=(Get-Acl -Path $Target1)
+$AccessControlList1.SetAccessRule($AccessRule1)
+$AccessRuleList.Add("Set-Acl -Path $Target1 -AclObject `$AccessControlList1")
 
 Try {
 
@@ -24,9 +38,11 @@ Try {
     Write-Host ""
     Write-Host "Running pre-push hook..."
 
+    
+
     #copy specified items (use Invoke-Expression to properly handle multiple items with spaces in their names)
     Write-Host "Copying specified items..."
-    $CopyItemsCommand="Copy-Item -Path $CurrentDirectory -Destination $Destination -Include $ItemsToCopy -Recurse"
+    $CopyItemsCommand="Copy-Item -Path $CurrentDirectory -Destination $Destination -Include $ItemsToCopy -Exclude $ItemsToExclude -Recurse"
     Invoke-Expression -Command $CopyItemsCommand
 
     Write-Host "Success"
