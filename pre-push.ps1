@@ -40,13 +40,10 @@ Try {
 
     
 
-    #copy specified items (use Invoke-Expression to properly handle multiple items with spaces in their names)
-    Write-Host "Copying specified items..."
-    $CopyItemsCommand="Copy-Item -Path $CurrentDirectory -Destination $Destination -Include $ItemsToCopy -Exclude $ItemsToExclude -Recurse"
-    Invoke-Expression -Command $CopyItemsCommand
-
-    Write-Host "Success"
-    Return 0    #return success code of 0
+    #this isn't completed code, this is just recording what I tried in case I need it again; it did work, it's just slow
+    #https://stackoverflow.com/questions/21911542/push-to-a-remote-origin-on-a-subfolder-of-git-repository
+    git remote add prod ""	#forward-slashed remote path
+    git subtree push --prefix="MarketingData script" --squash prod master
 
 }
 Catch {
