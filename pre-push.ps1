@@ -12,15 +12,15 @@
 #declare namespaces
 using namespace System.Security.AccessControl
 
-#common variables
-$ErrorActionPreference="Stop"
-
-#script variables
-$ProdRepoLocation=""        #not necessary to double-quote
-
-#targeted permissions must be set in the body of the script (the permissions can't be set until the repo is pushed and the directories exist)
-
 Try {
+
+	#common variables
+	$ErrorActionPreference="Stop"
+
+	#script variables
+	$ProdRepoLocation="ProdRepoLocationHere"        #not necessary to double-quote
+
+	#targeted permissions must be set in the body of the script (the permissions can't be set until the repo is pushed and the directories exist)
 
     Write-Host "---------------"
     Write-Host ""
