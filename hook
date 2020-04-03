@@ -2,7 +2,7 @@
 
 #hooks run in the context of the repo root
 
-$HookScriptFileName=""
+$HookScriptFileName=""	#ie "pre-push.ps1"
 
 $HookScriptLocation=(Get-Item ([string]::IsNullOrWhiteSpace($PSScriptRoot) ? (Get-Location).Path : $PSScriptRoot))
 $HookScriptLocation=(Join-Path -Path $HookScriptLocation -ChildPath (Join-Path -Path "Git hooks" -ChildPath $HookScriptFileName))
