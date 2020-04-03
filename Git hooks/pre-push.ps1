@@ -38,7 +38,7 @@ Try {
 
     #targeted permissions (repeat for as many targets and users as necessary)
     $Target="$(Join-Path -Path $ProdRepoLocation -ChildPath "TargetedDirectoryHere")"     #do not double-quote (the Get-Acl command below doesn't handle the double-quoted variable)
-    $User="DOMAIN/UsernameHere"       #DOMAIN/username
+    $User="DOMAIN\UsernameHere"       #DOMAIN\username
     $AccessRule=New-Object FileSystemAccessRule("$User","FullControl","ContainerInherit,Objectinherit","none","Allow")
     $AccessControlList=(Get-Acl -Path $Target)
     $AccessControlList.SetAccessRule($AccessRule)
