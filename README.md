@@ -1,10 +1,10 @@
 
-The contents of this repo allow a git hook to be replaced with the hook file (renamed to the appropriate git hook name), which then calls the specified PowerShell script
+The contents of this repo allow the running of a PowerShell script as a git hook
 
 This solves the following issues:
-- Sometimes git hooks need somewhat extensive scripting logic, and hooks are not source-controlled
-- Issues can arise due to line-ending differences (git hooks are by default unix-style)
+- Sometimes git hooks need scripting logic
+- By default git hooks are not source-controlled
 
-This allows a simple, reusable hook script which calls a source-controlled PowerShell script
-- The hook script calls a relative path to the PowerShell script and can handle filepaths with spaces
-- The PowerShell script can use Windows-style line-endings which prevents any messiness in the repo
+First within the project root create the directory .githooks
+Then within the project run "git config core.hooksPath .githooks"
+Then place the hook file into the .githooks directory and rename to the proper hook name (pre-commit, pre-push, etc)

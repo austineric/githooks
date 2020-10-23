@@ -1,4 +1,4 @@
-#!/usr/bin/env pwsh
+#!/bin/env pwsh
 
 ####################################
 # Author:       Eric Austin
@@ -45,7 +45,7 @@ Try {
     Set-Acl -Path $Target -AclObject $AccessControlList
 
     Write-Host "Success"
-    Return 0    #return success code of 0
+    Exit 0    #return success code of 0
 
 }
 Catch {
@@ -55,8 +55,8 @@ Catch {
     Write-Host $Error[0]
     Write-Host "*****"
     
-	#since this is a pre-push hook returning a non-zero return code prevents the push from happening
-    Return 1	
+	#returning a non-zero code prevents the action from happening
+    Exit 1	
 
 }
 Finally {
